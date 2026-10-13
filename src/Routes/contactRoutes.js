@@ -1,13 +1,13 @@
 import express from "express";
-import { protect, admin } from "../middleware/authMiddleware.js";
-import { createContact, getContacts, getContactById, updateContact, deleteContact } from "../controllers/contactController.js";
+import { protect } from "../middleware/authMiddleware.js";
+import { submitContact, getMessages, getMessageById, toggleReadStatus, deleteMessage } from "../controllers/contactController.js";
 
 const router = express.Router();
 
-router.post("/contact", createContact);
-router.get("/contact", protect, admin, getContacts);
-router.get("/contact/:id", protect, admin, getContactById);
-router.put("/contact/:id", protect, admin, updateContact);
-router.delete("/contact/:id", protect, admin, deleteContact);
+router.post("/contact", submitContact);
+router.get("/contact/:id", protect, getMessageById)
+router.get("/contact", protect, getMessages);
+router.put("/contact/:id", protect, toggleReadStatus);
+router.delete("/contact/:id", protect, deleteMessage);
 
 export default router;
