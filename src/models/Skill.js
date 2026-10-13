@@ -1,39 +1,47 @@
-import mongoose from 'mongoose';
+import { Mongoose } from "mongoose";
+const UserDetailsSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "Name is required"],
+    trim: true,
+    maxlength: 50,
 
-const skillSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: [true, 'Skill name is required'],
-      trim: true,
-      unique: true,
-    },
-    category: {
-      type: String,
-      required: [true, 'Category is required'],
-      enum: ['frontend', 'backend', 'database', 'devops', 'tools', 'languages', 'other'],
-      default: 'frontend',
-    },
-    proficiency: {
-      type: Number,
-      min: 0,
-      max: 100,
-      default: 80,
-    },
-    icon: {
-      type: String,
-      default: '',
-    },
-    order: {
-      type: Number,
-      default: 0,
-    },
   },
+  age: {
+    type: String,
+    required: [true, "age is required"],
+    trim: true
+  },
+  bio: {
+    trpe: String,
+    required: [true, "Bio is most important"]
+  },
+  education: {
+    type: String,
+    required: [true, "Education is required"]
+  },
+  email: {
+    type: String,
+    required: [true, "Email is required"]
+  },
+  skills: {
+    type: Array,
+    required: [true, "Skills are required"]
+  },
+  Certificate: {
+    type: String,
+    required: [true, "Certificate is required"],
+    default: "No certificate"
+  },
+  contactNumber: {
+    type: String,
+    required: [true, "Number is required"],
+    default: "No numbers",
+    maxlength: 11
+  }
+
+},
   {
     timestamps: true,
-  }
-);
+  })
 
-const Skill = mongoose.model('Skill', skillSchema);
-
-export default Skill;
