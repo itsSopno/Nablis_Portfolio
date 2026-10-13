@@ -1,4 +1,4 @@
-import { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 const UserDetailsSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -44,4 +44,5 @@ const UserDetailsSchema = new mongoose.Schema({
   {
     timestamps: true,
   })
-
+const UserDetails = mongoose.model("UserDetails", UserDetailsSchema)
+export default UserDetails
