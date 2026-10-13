@@ -75,7 +75,8 @@ export const createProject = async (req, res, next) => {
       githubClient,
       githubServer,
       featured,
-      order,
+      tech,
+      date,
     } = req.body;
 
     if (!title || !description) {
@@ -92,7 +93,8 @@ export const createProject = async (req, res, next) => {
       githubClient,
       githubServer,
       featured: Boolean(featured),
-      order: Number(order) || 0,
+      tech: Array.isArray(tech) ? tech : [],
+      date: String(date) || '',
     });
 
     return sendSuccess(res, 'Project created successfully', project, 201);

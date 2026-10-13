@@ -51,10 +51,14 @@ const projectSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    order: {
-      type: Number,
-      default: 0,
+    tech: {
+      type: Array,
+      required: [true, 'Please provide tech'],
     },
+    date: {
+      type: String,
+      required: [true, 'Please provide date'],
+    }
   },
   {
     timestamps: true,
