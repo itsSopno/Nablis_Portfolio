@@ -13,8 +13,9 @@ const UserDetailsSchema = new mongoose.Schema({
     trim: true
   },
   bio: {
-    trpe: String,
-    required: [true, "Bio is most important"]
+    type: String,
+    required: [true, "Bio is most important"],
+    trim: true
   },
   education: {
     type: String,
