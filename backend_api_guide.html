@@ -1,0 +1,230 @@
+﻿<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Portfolio Backend - API Testing Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.7; }
+  .page { max-width: 860px; margin: 0 auto; padding: 48px 40px; }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); color: white; border-radius: 16px; padding: 40px; margin-bottom: 36px; text-align: center; }
+  .header h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+  .header p { color: #94a3b8; font-size: 15px; }
+  .badge { display: inline-block; background: #3b82f6; color: white; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 12px; }
+
+  /* Section */
+  .section { background: white; border-radius: 12px; padding: 28px 32px; margin-bottom: 24px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .section-title { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; }
+  .step-num { background: #3b82f6; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+
+  /* Info Row */
+  .info-row { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; flex-wrap: wrap; }
+  .label { background: #f1f5f9; color: #475569; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 6px; min-width: 90px; text-align: center; flex-shrink: 0; }
+  .method-post { background: #dcfce7; color: #16a34a; }
+  .method-get  { background: #dbeafe; color: #1d4ed8; }
+  .method-put  { background: #fef9c3; color: #ca8a04; }
+  .method-del  { background: #fee2e2; color: #dc2626; }
+  .value { font-family: 'Fira Code', monospace; font-size: 13px; color: #0f172a; background: #f8fafc; padding: 4px 12px; border-radius: 6px; border: 1px solid #e2e8f0; word-break: break-all; }
+
+  /* Code Block */
+  pre { background: #0f172a; color: #e2e8f0; padding: 20px 24px; border-radius: 10px; font-family: 'Fira Code', monospace; font-size: 13px; line-height: 1.8; overflow-x: auto; margin: 14px 0; }
+  .comment { color: #64748b; }
+  .string  { color: #86efac; }
+  .key     { color: #93c5fd; }
+  .bool    { color: #f9a8d4; }
+
+  /* Alert Boxes */
+  .tip  { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; }
+  .warn { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; }
+  .info { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; }
+  .tip strong, .warn strong, .info strong { display: block; margin-bottom: 4px; font-size: 13px; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  th { background: #f1f5f9; color: #475569; font-size: 12px; font-weight: 600; padding: 10px 14px; text-align: left; }
+  td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .tag-public  { background: #dcfce7; color: #16a34a; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .tag-private { background: #fee2e2; color: #dc2626; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  td code { font-family: 'Fira Code', monospace; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+
+  /* Footer */
+  .footer { text-align: center; color: #94a3b8; font-size: 13px; margin-top: 36px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+
+  @media print {
+    body { background: white; }
+    .page { padding: 20px; }
+    .section { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🚀 Portfolio Backend — API Testing Guide</h1>
+    <p>PowerShell Terminal দিয়ে Backend API Test করার সম্পূর্ণ গাইড</p>
+    <span class="badge">Server: http://localhost:5000</span>
+  </div>
+
+  <!-- Prerequisites -->
+  <div class="section">
+    <div class="section-title"><span class="step-num">⚙</span> শুরু করার আগে</div>
+    <div class="tip"><strong>✅ Server চালু আছে কিনা নিশ্চিত করুন:</strong>
+      Backend folder এ <code>npm run dev</code> চালু রাখুন। Terminal এ "Server is running at port 5000" দেখা যাওয়া উচিত।
+    </div>
+    <div class="warn"><strong>⚠️ সব Commands একই Terminal Window তে চালান!</strong>
+      Step 1 এ Login করে Token পাওয়ার পর, সেই <strong>একই</strong> terminal এ বাকি commands চালাতে হবে। নতুন terminal খুললে $token হারিয়ে যাবে।
+    </div>
+  </div>
+
+  <!-- Step 1: Login -->
+  <div class="section">
+    <div class="section-title"><span class="step-num">1</span> Login করুন — Token নিন</div>
+    <div class="info-row">
+      <span class="label method-post">POST</span>
+      <span class="value">http://localhost:5000/api/auth/login</span>
+    </div>
+    <p style="font-size:14px; color:#475569; margin-bottom:10px;">প্রথমে Login করে JWT Token নিতে হবে। এই Token দিয়েই পরবর্তী সব Protected API access করা যাবে।</p>
+    <pre><span class="comment"># PowerShell Terminal এ paste করুন:</span>
+$response = Invoke-RestMethod `
+    -Uri <span class="string">"http://localhost:5000/api/auth/login"</span> `
+    -Method POST `
+    -ContentType <span class="string">"application/json"</span> `
+    -Body <span class="string">'{"email":"admin@portfolio.com","password":"admin123456"}'</span>
+
+$token = $response.data.token
+Write-Host <span class="string">"Token: $token"</span></pre>
+    <div class="tip"><strong>✅ সফল হলে Token দেখাবে:</strong> eyJhbGciOiJIUzI1NiIsInR5cCI6Ikp...</div>
+  </div>
+
+  <!-- Step 2: POST Project -->
+  <div class="section">
+    <div class="section-title"><span class="step-num">2</span> Project যোগ করুন</div>
+    <div class="info-row">
+      <span class="label method-post">POST</span>
+      <span class="value">http://localhost:5000/api/projects/project</span>
+    </div>
+    <div class="info"><strong>🔐 Protected Route — Token লাগবে</strong> Authorization header এ Bearer Token পাঠাতে হবে।</div>
+    <pre>$body = @{
+    <span class="key">title</span>       = <span class="string">"Portfolio Website"</span>
+    <span class="key">description</span> = <span class="string">"My personal portfolio built with React and Node.js"</span>
+    <span class="key">category</span>    = <span class="string">"fullstack"</span>
+    <span class="key">tags</span>        = @(<span class="string">"React"</span>, <span class="string">"Node.js"</span>, <span class="string">"MongoDB"</span>)
+    <span class="key">liveUrl</span>     = <span class="string">"https://myportfolio.com"</span>
+    <span class="key">githubClient</span>= <span class="string">"https://github.com/username/portfolio"</span>
+    <span class="key">featured</span>    = <span class="bool">$true</span>
+    <span class="key">tech</span>        = @(@{name=<span class="string">"React"</span>;icon=<span class="string">"react"</span>}, @{name=<span class="string">"Node.js"</span>;icon=<span class="string">"nodejs"</span>})
+    <span class="key">date</span>        = <span class="string">"2024"</span>
+} | ConvertTo-Json -Depth 5
+
+Invoke-RestMethod `
+    -Uri <span class="string">"http://localhost:5000/api/projects/project"</span> `
+    -Method POST `
+    -ContentType <span class="string">"application/json"</span> `
+    -Headers @{Authorization = <span class="string">"Bearer $token"</span>} `
+    -Body $body</pre>
+  </div>
+
+  <!-- Step 3: GET Projects -->
+  <div class="section">
+    <div class="section-title"><span class="step-num">3</span> সব Projects দেখুন</div>
+    <div class="info-row">
+      <span class="label method-get">GET</span>
+      <span class="value">http://localhost:5000/api/projects/project</span>
+    </div>
+    <div class="tip"><strong>✅ Public Route — Token লাগবে না</strong></div>
+    <pre>Invoke-RestMethod `
+    -Uri <span class="string">"http://localhost:5000/api/projects/project"</span> `
+    -Method GET</pre>
+  </div>
+
+  <!-- Step 4: POST Skill -->
+  <div class="section">
+    <div class="section-title"><span class="step-num">4</span> Skill যোগ করুন</div>
+    <div class="info-row">
+      <span class="label method-post">POST</span>
+      <span class="value">http://localhost:5000/api/skills/skill</span>
+    </div>
+    <pre>$skillBody = @{
+    <span class="key">name</span>        = <span class="string">"React"</span>
+    <span class="key">category</span>    = <span class="string">"frontend"</span>
+    <span class="key">proficiency</span> = 90
+    <span class="key">icon</span>        = <span class="string">"react"</span>
+    <span class="key">order</span>       = 1
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+    -Uri <span class="string">"http://localhost:5000/api/skills/skill"</span> `
+    -Method POST `
+    -ContentType <span class="string">"application/json"</span> `
+    -Headers @{Authorization = <span class="string">"Bearer $token"</span>} `
+    -Body $skillBody</pre>
+    <p style="font-size:13px; color:#475569; margin-top:10px;">
+      Category অপশন: <code>frontend</code> | <code>backend</code> | <code>database</code> | <code>devops</code> | <code>tools</code> | <code>languages</code> | <code>other</code>
+    </p>
+  </div>
+
+  <!-- Step 5: Contact -->
+  <div class="section">
+    <div class="section-title"><span class="step-num">5</span> Contact Message পাঠান (Public)</div>
+    <div class="info-row">
+      <span class="label method-post">POST</span>
+      <span class="value">http://localhost:5000/api/contact/contact</span>
+    </div>
+    <div class="tip"><strong>✅ Public Route — Token লাগবে না (Visitor পাঠাবে)</strong></div>
+    <pre>$contactBody = @{
+    <span class="key">name</span>    = <span class="string">"Test User"</span>
+    <span class="key">email</span>   = <span class="string">"test@gmail.com"</span>
+    <span class="key">subject</span> = <span class="string">"Hello from test"</span>
+    <span class="key">message</span> = <span class="string">"This is a test message from PowerShell."</span>
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+    -Uri <span class="string">"http://localhost:5000/api/contact/contact"</span> `
+    -Method POST `
+    -ContentType <span class="string">"application/json"</span> `
+    -Body $contactBody</pre>
+  </div>
+
+  <!-- Full API Table -->
+  <div class="section">
+    <div class="section-title"><span class="step-num">📋</span> সম্পূর্ণ API Routes তালিকা</div>
+    <table>
+      <thead>
+        <tr><th>Method</th><th>Endpoint</th><th>কাজ</th><th>Access</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>POST</code></td><td><code>/api/auth/login</code></td><td>Admin login</td><td><span class="tag-public">Public</span></td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/auth/me</code></td><td>নিজের profile দেখুন</td><td><span class="tag-private">🔐 Private</span></td></tr>
+        <tr><td><code>PUT</code></td><td><code>/api/auth/change-password</code></td><td>Password পরিবর্তন</td><td><span class="tag-private">🔐 Private</span></td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/projects/project</code></td><td>সব Projects দেখুন</td><td><span class="tag-public">Public</span></td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/projects/project</code></td><td>নতুন Project যোগ করুন</td><td><span class="tag-private">🔐 Private</span></td></tr>
+        <tr><td><code>PUT</code></td><td><code>/api/projects/project/:id</code></td><td>Project আপডেট করুন</td><td><span class="tag-private">🔐 Private</span></td></tr>
+        <tr><td><code>DELETE</code></td><td><code>/api/projects/project/:id</code></td><td>Project মুছুন</td><td><span class="tag-private">🔐 Private</span></td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/skills/skill</code></td><td>সব Skills দেখুন</td><td><span class="tag-public">Public</span></td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/skills/skill</code></td><td>নতুন Skill যোগ করুন</td><td><span class="tag-private">🔐 Private</span></td></tr>
+        <tr><td><code>PUT</code></td><td><code>/api/skills/skill/:id</code></td><td>Skill আপডেট করুন</td><td><span class="tag-private">🔐 Private</span></td></tr>
+        <tr><td><code>DELETE</code></td><td><code>/api/skills/skill/:id</code></td><td>Skill মুছুন</td><td><span class="tag-private">🔐 Private</span></td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/contact/contact</code></td><td>Message পাঠান</td><td><span class="tag-public">Public</span></td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/contact/contact</code></td><td>সব messages দেখুন</td><td><span class="tag-private">🔐 Private</span></td></tr>
+        <tr><td><code>DELETE</code></td><td><code>/api/contact/contact/:id</code></td><td>Message মুছুন</td><td><span class="tag-private">🔐 Private</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PDF Tip -->
+  <div class="warn" style="margin-top:0;">
+    <strong>📄 এই পেজটি PDF হিসেবে সেভ করুন:</strong>
+    Browser এ এই ফাইল খুলুন → <strong>Ctrl + P</strong> চাপুন → Destination এ <strong>"Save as PDF"</strong> সিলেক্ট করুন → Save করুন।
+  </div>
+
+  <div class="footer">Portfolio Backend API Guide &nbsp;•&nbsp; Generated for Personal Use</div>
+</div>
+</body>
+</html>
