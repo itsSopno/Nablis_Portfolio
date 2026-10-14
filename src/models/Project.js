@@ -58,6 +58,18 @@ const projectSchema = new mongoose.Schema(
     date: {
       type: String,
       required: [true, 'Please provide date'],
+    },
+    problems: {
+      type: String,
+      required: [true]
+    },
+    solutions: {
+      type: String,
+      required: [true]
+    },
+    challenges: {
+      type: String,
+      required: [true]
     }
   },
   {
