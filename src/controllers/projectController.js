@@ -68,6 +68,9 @@ export const createProject = async (req, res, next) => {
     const {
       title,
       description,
+      problems,
+      solutions,
+      challenges,
       category,
       image,
       tags,
@@ -86,6 +89,9 @@ export const createProject = async (req, res, next) => {
     const project = await Project.create({
       title,
       description,
+      problems,
+      solutions,
+      challenges,
       category: category || 'fullstack',
       image,
       tags: Array.isArray(tags) ? tags : [],
