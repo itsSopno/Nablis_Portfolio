@@ -1,14 +1,42 @@
 import mongoose from 'mongoose';
 
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
 const connectDB = async () => {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/portfolio_db';
+  if (cached.conn && mongoose.connection.readyState === 1) {
+    return cached.conn;
+  }
+
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error('MONGODB_URI environment variable is not defined on server');
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 8000,
+    };
+
+    cached.promise = mongoose.connect(uri, opts).then((mongooseInstance) => {
+      console.log(` MongoDB Connected successfully: ${mongooseInstance.connection.host}`);
+      return mongooseInstance;
+    });
+  }
+
   try {
-    const conn = await mongoose.connect(uri);
-    console.log(`✅ MongoDB Connected successfully: ${conn.connection.host}`);
+    cached.conn = await cached.promise;
+    return cached.conn;
   } catch (error) {
-    console.error(`❌ MongoDB Connection Error: ${error.message}`);
-    console.warn('⚠️  Continuing server startup. Please make sure MongoDB is running or configure MONGODB_URI in .env');
+    cached.promise = null;
+    console.error(`MongoDB Connection Error: ${error.message}`);
+    throw error;
   }
 };
 
 export default connectDB;
+
