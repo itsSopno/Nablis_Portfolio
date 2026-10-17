@@ -77,16 +77,23 @@ const projectSchema = new mongoose.Schema(
   }
 );
 
-// Auto-generate slug before save if not provided
+// Helper: generate URL-safe slug from title
+function generateSlug(title) {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+// Auto-generate slug before save (new docs OR title changed)
 projectSchema.pre('save', function () {
-  if (this.isModified('title') && !this.slug) {
-    this.slug = this.title
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/[\s_-]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+  if (this.isNew || this.isModified('title')) {
+    this.slug = generateSlug(this.title);
   }
 });
+
+export { generateSlug };
 
 const Project = mongoose.model('Project', projectSchema);
 

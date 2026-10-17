@@ -1,4 +1,4 @@
-import Project from '../models/Project.js';
+import Project, { generateSlug } from '../models/Project.js';
 import { sendSuccess, sendError } from '../utils/apiResponse.js';
 
 // @desc    Get all projects (with optional filters)
@@ -114,7 +114,15 @@ export const createProject = async (req, res, next) => {
 // @access  Private (Admin)
 export const updateProject = async (req, res, next) => {
   try {
-    const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
+    const updateData = { ...req.body };
+
+    // Manually regenerate slug if title is being updated
+    // (findByIdAndUpdate skips pre-save hooks)
+    if (updateData.title) {
+      updateData.slug = generateSlug(updateData.title);
+    }
+
+    const project = await Project.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true,
     });
