@@ -6,6 +6,7 @@ import authRoutes from "./Routes/authRoutes.js";
 import projectRoutes from "./Routes/projectRoutes.js";
 import skillRoutes from "./Routes/skillRoutes.js";
 import contactRoutes from "./Routes/contactRoutes.js";
+import allProjectRoutes from "./Routes/allProjectRoutes.js";
 import { notFoundHandler, errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
@@ -80,6 +81,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/skills', skillRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/allprojects', allProjectRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -87,8 +89,17 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`Server is running at port number ${PORT}`);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`❌ Port ${PORT} is already in use! Kill the old process and try again.`);
+    } else {
+      console.error('Server error:', err.message);
+    }
+    process.exit(1);
   });
 }
 
